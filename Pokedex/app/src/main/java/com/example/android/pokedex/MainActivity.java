@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.EventLog;
@@ -40,6 +43,8 @@ import java.nio.charset.Charset;
 public class MainActivity extends AppCompatActivity {
 
     String Stringrequrl;
+    Handler mHandler;
+    Runnable r;
     EditText namebox;
     ImageView I;
     TextView N,T,W,H;
@@ -51,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     boolean var = true;
     SQLiteDatabase mDb;
     public static final int DELETEHISTORY = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,10 +181,12 @@ public class MainActivity extends AppCompatActivity {
             }
 
             else
-                Toast.makeText(this,"ERROR",Toast.LENGTH_LONG);
+            {
+                var = false;
+            }
 
         } catch (IOException e) {
-            Toast.makeText(this,"URL NOT FOUND",Toast.LENGTH_LONG).show();
+
         } finally {
             if(urlco!=null)
                 urlco.disconnect();
@@ -232,6 +240,14 @@ public class MainActivity extends AppCompatActivity {
         mDb.insert(PokedexContract.PokedexEntry.TABLENAME,null,cv);
     }
 
+
+    public void ErrorToast()
+    {
+        Toast T = Toast.makeText(this,"REQUEST UNSUCCESSFUL",Toast.LENGTH_LONG);
+        T.setGravity(Gravity.CENTER,0,0);
+        T.show();
+    }
+
     public void UpdateScreen()
     {
         t.setVisibility(View.VISIBLE);
@@ -252,6 +268,11 @@ public class MainActivity extends AppCompatActivity {
     public class PokedexTask extends AsyncTask<URL,Void,Void>{
 
         @Override
+        protected void onPreExecute() {
+            var = true;
+        }
+
+        @Override
         protected Void doInBackground(URL... urls) {
 
 
@@ -268,6 +289,7 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
+
                     ExtractfromJSON(jsonResponse);
 
             return null;
@@ -275,6 +297,13 @@ public class MainActivity extends AppCompatActivity {
 
 
         @Override
-        protected void onPostExecute(Void aVoid) {UpdateScreen();}
+        protected void onPostExecute(Void aVoid)
+        {
+            if(var == true)
+                UpdateScreen();
+
+            else
+                ErrorToast();
+        }
     }
 }

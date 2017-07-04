@@ -13,7 +13,7 @@ import static android.R.attr.version;
 public class PokedexDbHelper extends SQLiteOpenHelper {
 
     private static final String DATABASENAME = "Pokedex.db";
-    private static final int DATABASEVERSION = 3;
+    private static final int DATABASEVERSION = 4;
 
     public PokedexDbHelper(Context context) {
         super(context, DATABASENAME, null, DATABASEVERSION);
